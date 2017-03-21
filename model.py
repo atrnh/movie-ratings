@@ -23,6 +23,16 @@ class User(db.Model):
     age = db.Column(db.Integer, nullable=True)
     zipcode = db.Column(db.String(15), nullable=True)
 
+    # must run python create_all() if newly generated
+    # have space between fields and dependancies
+    ratings = db.relationship('ratings')
+
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return "<User user_id=%s email=%s>" % (self.user_id,
+                                               self.email)
+
 
 ##############################################################################
 # Movie classes
@@ -33,8 +43,11 @@ class Movie(db.Model):
 
     movie_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     title = db.Column(db.String(64), nullable=True)
-    released_at = db.Column(db.datetime, nullable=True)
+    released_at = db.Column(db.DateTime, nullable=True)
     imdb_url = db.Column(db.String(100), nullable=True)
+
+    # must run python create_all() if newly generated
+    ratings = db.relationship('ratings')
 
 
 ##############################################################################
@@ -45,8 +58,9 @@ class Rating(db.Model):
     __tablename__ = "ratings"
 
     ratings_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    movie_id = db.Column(db.Integer, nullable=True)
-    user_id = db.Column(db.Integer, nullable=True)
+    # check if /d and key is recognized as foregn (but do create_all() first)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.movie_id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=True)
     score = db.Column(db.Integer, nullable=True)
 
 

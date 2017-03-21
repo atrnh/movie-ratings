@@ -2,11 +2,12 @@
 
 from sqlalchemy import func
 from model import User
-# from model import Rating
-# from model import Movie
+from model import Rating
+from model import Movie
 
 from model import connect_to_db, db
 from server import app
+import datetime
 
 
 def load_users():
@@ -37,9 +38,62 @@ def load_users():
 def load_movies():
     """Load movies from u.item into database."""
 
+    # Delete all rows in table, so if we need to run this a second time,
+    # we won't be trying to add duplicate users
+    Movie.query.delete()
+
+    for row in open("seed_data/u.item"):
+        row = row.rstrip()
+        movie_id, movie_title, released_str, video_release_date, imdb_URL,\
+        unknown, action, adventure, animation, children, comedy, crime,\
+        documentary, drama, fantasy, film_noir, horror, musical, mystery,\
+        romance, sci_fi, thriller, war, western = row.split("|")
+
+        # Change release_date from “31-Oct-2015”to Python datetime
+        if released_str:
+            released_at = datetime.datetime.strptime(released_str, "%d-%b-%Y")
+        else:
+            released_at = None
+
+        # Remove parenthetical date from the title.
+        movie_title = movie_title[:-7]
+
+        movie = Movie(movie_id=movie_id,
+                      movie_title=movie_title,
+                      released_at=released_at,
+                      video_release_date=video_release_date,
+                      imdb_URL=imdb_URL,
+                      unknown=unknown,
+                      action=action,
+                      adventure=adventure,
+                      animation=animation,
+                      children=children,
+                      comedy=comedy,
+                      crime=crime,
+                      documentary=documentary,
+                      drama=drama,
+                      fantasy=fantasy,
+                      film_noir=film_noir,
+                      horror=horror,
+                      musical=musical,
+                      mystery=mystery,
+                      romance=romance,
+                      sci_fi=sci_fi,
+                      thriller=thriller,
+                      war=war,
+                      western=western)
+
+        # Read u.user file and insert data
+        # We need to add to the session or it won't ever be stored
+        db.session.add(movie)
+
+    # Once we're done, we should commit our work
+    db.session.commit()
+
 
 def load_ratings():
     """Load ratings from u.data into database."""
+    pass
 
 
 def set_val_user_id():
