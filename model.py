@@ -25,7 +25,7 @@ class User(db.Model):
 
     # must run python create_all() if newly generated
     # have space between fields and dependancies
-    ratings = db.relationship('ratings')
+    ratings = db.relationship('Rating')
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -42,12 +42,12 @@ class Movie(db.Model):
     __tablename__ = "movies"
 
     movie_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    title = db.Column(db.String(64), nullable=True)
+    title = db.Column(db.String(90), nullable=True)
     released_at = db.Column(db.DateTime, nullable=True)
-    imdb_url = db.Column(db.String(100), nullable=True)
+    imdb_url = db.Column(db.String(200), nullable=True)
 
     # must run python create_all() if newly generated
-    ratings = db.relationship('ratings')
+    ratings = db.relationship('Rating')
 
 
 ##############################################################################
@@ -62,6 +62,13 @@ class Rating(db.Model):
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.movie_id'), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=True)
     score = db.Column(db.Integer, nullable=True)
+
+    movie = db.relationship('Movie')
+    user = db.relationship('User')
+
+
+class Genre(db.Model):
+    pass
 
 
 ##############################################################################

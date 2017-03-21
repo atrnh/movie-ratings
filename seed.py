@@ -13,16 +13,16 @@ import datetime
 def load_users():
     """Load users from u.user into database."""
 
-    print "Users"
+    print 'Users'
 
     # Delete all rows in table, so if we need to run this a second time,
     # we won't be trying to add duplicate users
     User.query.delete()
 
     # Read u.user file and insert data
-    for row in open("seed_data/u.user"):
+    for row in open('seed_data/u.user'):
         row = row.rstrip()
-        user_id, age, gender, occupation, zipcode = row.split("|")
+        user_id, age, gender, occupation, zipcode = row.split('|')
 
         user = User(user_id=user_id,
                     age=age,
@@ -42,46 +42,30 @@ def load_movies():
     # we won't be trying to add duplicate users
     Movie.query.delete()
 
-    for row in open("seed_data/u.item"):
+    for row in open('seed_data/u.item'):
         row = row.rstrip()
-        movie_id, movie_title, released_str, video_release_date, imdb_URL,\
-        unknown, action, adventure, animation, children, comedy, crime,\
-        documentary, drama, fantasy, film_noir, horror, musical, mystery,\
-        romance, sci_fi, thriller, war, western = row.split("|")
 
-        # Change release_date from “31-Oct-2015”to Python datetime
+        (movie_id,
+         title,
+         released_str,
+         video_release_date,
+         imdb_url,
+         ) = row.split('|')[:5]
+
+        # Change release_date to Python datetime
         if released_str:
-            released_at = datetime.datetime.strptime(released_str, "%d-%b-%Y")
+            released_at = datetime.datetime.strptime(released_str, '%d-%b-%Y')
         else:
             released_at = None
 
         # Remove parenthetical date from the title.
-        movie_title = movie_title[:-7]
+        title = title[:-7].decode('latin-1')
 
         movie = Movie(movie_id=movie_id,
-                      movie_title=movie_title,
+                      title=title,
                       released_at=released_at,
-                      video_release_date=video_release_date,
-                      imdb_URL=imdb_URL,
-                      unknown=unknown,
-                      action=action,
-                      adventure=adventure,
-                      animation=animation,
-                      children=children,
-                      comedy=comedy,
-                      crime=crime,
-                      documentary=documentary,
-                      drama=drama,
-                      fantasy=fantasy,
-                      film_noir=film_noir,
-                      horror=horror,
-                      musical=musical,
-                      mystery=mystery,
-                      romance=romance,
-                      sci_fi=sci_fi,
-                      thriller=thriller,
-                      war=war,
-                      western=western)
+                      imdb_url=imdb_url,
+                      )
 
         # Read u.user file and insert data
         # We need to add to the session or it won't ever be stored
