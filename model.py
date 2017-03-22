@@ -23,10 +23,6 @@ class User(db.Model):
     age = db.Column(db.Integer, nullable=True)
     zipcode = db.Column(db.String(15), nullable=True)
 
-    # must run python create_all() if newly generated
-    # have space between fields and dependancies
-    ratings = db.relationship('Rating')
-
     def __repr__(self):
         """Provide helpful representation when printed."""
 
@@ -47,6 +43,7 @@ class Movie(db.Model):
     imdb_url = db.Column(db.String(200), nullable=True)
 
     # must run python create_all() if newly generated
+    # have space between fields and dependancies
     ratings = db.relationship('Rating')
 
 
@@ -57,14 +54,15 @@ class Rating(db.Model):
 
     __tablename__ = "ratings"
 
-    ratings_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    rating_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     # check if /d and key is recognized as foregn (but do create_all() first)
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.movie_id'), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=True)
     score = db.Column(db.Integer, nullable=True)
 
     movie = db.relationship('Movie')
-    user = db.relationship('User')
+    user = db.relationship('User', backref=db.backref('ratings',
+                                                      order_by=rating_id))
 
     def __repr__(self):
         """Provide helpful representation when printed"""
