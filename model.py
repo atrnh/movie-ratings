@@ -66,9 +66,10 @@ class Rating(db.Model):
     movie = db.relationship('Movie')
     user = db.relationship('User')
 
+    def __repr__(self):
+        """Provide helpful representation when printed"""
 
-class Genre(db.Model):
-    pass
+        return "<Ratings user_id=%s, movie_id=%s>" % (self.user_id, self.movie_id)
 
 
 ##############################################################################
