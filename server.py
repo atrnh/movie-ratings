@@ -154,7 +154,8 @@ def update_rating():
 
     # TODO: new rating -add, existing rating - update
     try:
-        return
+        
+        return 
     except:
         return redirect('/')
 
