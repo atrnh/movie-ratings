@@ -59,6 +59,11 @@ def load_movies():
             released_at = None
 
         # Remove parenthetical date from the title.
+        # TODO : remove parenthetical date with regex
+        # TODO : anything that has digits in it
+        # if len(title) <= 7:
+        #     print 'This title is going to disappear: {}'.format(title)
+
         title = title[:-7].decode('latin-1')
 
         movie = Movie(movie_id=movie_id,
@@ -91,7 +96,7 @@ def load_ratings():
                         )
 
         db.session.add(rating)
-        print "Successfully added " + str(rating)
+        # print "Successfully added " + str(rating)
 
     db.session.commit()
 

@@ -62,14 +62,17 @@ def process_register():
 
 @app.route('/login')
 def login():
-    """Shows a log-in form."""
+    """Shows a login form."""
 
     return render_template('/login_form.html')
 
 
 @app.route('/login', methods=['POST'])
 def process_login():
-    """Process the log-in form"""
+    """Process the login form.
+
+    Flash message confirming login. Add user to session.
+    """
 
     email = request.form.get('email')
     password = request.form.get('password')
@@ -77,7 +80,7 @@ def process_login():
     # TODO : Consider later
     # Make sure it is first time for the user to login
 
-    # throw an error if the user is not ther ('user='' part tried)
+    # throw an error if the user is not the ('user='' part tried)
     try:
         user = User.query.filter_by(email=email).one()
 
@@ -86,9 +89,72 @@ def process_login():
             flash(email + ' logged in')
             session['user'] = email
             print session
-            return redirect('/')
+            return redirect('/user/' + str(user.user_id))
 
     # if not authentificated, then do not login the user
+    except:
+        flash('User does not exist')
+        return redirect('/')
+
+
+@app.route('/logout', methods=['POST'])
+def process_logout():
+    """Logout the user.
+
+    Flash a message confirming the logout.
+    """
+
+    del session['user']
+    flash('You logged out')
+
+    return redirect('/')
+
+
+@app.route('/user/<user_id>')
+def user_info(user_id):
+    """Display user information."""
+
+    try:
+        user = User.query.filter_by(user_id=user_id).one()
+        # TODO : use query to order by title
+        ratings = sorted(user.ratings, cmp=lambda x, y: cmp(x.movie.title.lower(), y.movie.title.lower()))
+        return render_template('user_profile.html', user=user,
+                                                    ratings=ratings)
+    except:
+        flash('User does not exist.')
+        return redirect('/')
+
+
+@app.route('/movies')
+def movies():
+    """List all movies by alphabetical order."""
+
+    movies = Movie.query.order_by(Movie.title).all()
+    return render_template('movie_list.html', movies=movies)
+
+
+@app.route('/movie/<movie_id>')
+def movie_info(movie_id):
+    """Display movie information."""
+
+    try:
+        movie = Movie.query.filter_by(movie_id=movie_id).one()
+        return render_template('movie_info.html', movie=movie)
+    except:
+        flash('Movie does not exist')
+        return redirect('/')
+
+
+@app.route('/update_rating', method=['POST'])
+def update_rating():
+    """Update rating for movie."""
+
+    movie_id = request.form.get('movie_id')
+    user_id = User.query.filter_by(email=session['user']).one().user_id
+
+    # TODO: new rating -add, existing rating - update
+    try:
+        return
     except:
         return redirect('/')
 

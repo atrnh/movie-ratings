@@ -21,5 +21,12 @@
 
   {% block content %} put your content here {% endblock %}
 
+  {% if 'user' in session %}
+    <form action="/logout" method="POST">
+      <input type="submit" value="Logout">
+    </form>
+
+  {% endif %}
+
 </body>
 </html>

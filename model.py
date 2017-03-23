@@ -23,6 +23,7 @@ class User(db.Model):
     age = db.Column(db.Integer, nullable=True)
     zipcode = db.Column(db.String(15), nullable=True)
 
+
     def __repr__(self):
         """Provide helpful representation when printed."""
 
