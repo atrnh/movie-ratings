@@ -145,19 +145,27 @@ def movie_info(movie_id):
         return redirect('/')
 
 
-@app.route('/update_rating', method=['POST'])
+@app.route('/update_rating', methods=['POST'])
 def update_rating():
     """Update rating for movie."""
 
     movie_id = request.form.get('movie_id')
     user_id = User.query.filter_by(email=session['user']).one().user_id
 
-    # TODO: new rating -add, existing rating - update
     try:
-        
-        return 
+        rating = Rating.query.filter_by(movie_id=movie_id,
+                                        user_id=user_id).one()
+        rating.score = request.form.get('rating')
+        db.session.commit()
+        flash('Rating updated')
     except:
-        return redirect('/')
+        db.session.add(Rating(movie_id=movie_id,
+                              user_id=user_id,
+                              score=request.form.get('rating')))
+        db.session.commit()
+        flash('Rating added')
+
+    return redirect('/movie/' + movie_id)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 """Models and database functions for Ratings project."""
 
 from flask_sqlalchemy import SQLAlchemy
+import correlation
 
 # This is the connection to the PostgreSQL database; we're getting this through
 # the Flask-SQLAlchemy helper library. On this, we can find the `session`
@@ -23,12 +24,48 @@ class User(db.Model):
     age = db.Column(db.Integer, nullable=True)
     zipcode = db.Column(db.String(15), nullable=True)
 
-
     def __repr__(self):
         """Provide helpful representation when printed."""
 
         return "<User user_id=%s email=%s>" % (self.user_id,
                                                self.email)
+
+    def similarity(self, other):
+        """Return Pearson rating for user compared to other user."""
+
+        self_ratings = {}
+        paired_ratings = []
+
+        for rating in self.ratings:
+            self_ratings[rating.movie_id] = rating
+
+        for rating in other.ratings:
+            self_rating = self_ratings.get(rating.movie_id)
+            if self_rating:
+                paired_ratings.append((self_rating.score, rating.score))
+
+        if paired_ratings:
+            return correlation.pearson(paired_ratings)
+
+        else:
+            return 0.0
+
+    def predict_rating(self, movie):
+        """Predict rating for a movie."""
+
+        ratings = movie.ratings
+
+        similarities = [(self.similarity(rating.user), rating.score)
+                        for rating in ratings]
+
+        similarities.sort(reverse=True)
+
+        numerator = sum([score * similarity for similarity, score in
+                         similarities])
+        denominator = sum([similarity for similarity, score in
+                           similarities])
+
+        return numerator * denominator
 
 
 ##############################################################################
